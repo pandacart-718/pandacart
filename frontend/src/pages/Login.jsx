@@ -1,121 +1,82 @@
-import { useEffect, useState } from "react";
-import Header from "../components/Header";
+import { useState } from "react";
+import API_BASE from "../config";
 
 export default function Login({ setIsLoggedIn, setEmail }) {
   const [email, setEmailInput] = useState("");
   const [otp, setOtp] = useState("");
-  const [sent, setSent] = useState(false);
-  const [timer, setTimer] = useState(60);
-  const [status, setStatus] = useState("");
+  const [step, setStep] = useState(1);
+  const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    if (!sent || timer === 0) return;
-
-    const interval = setInterval(() => {
-      setTimer((t) => t - 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [sent, timer]);
-
-  // 🔹 SEND OTP (REAL BACKEND)
   const sendOtp = async () => {
-    if (!email) {
-      setStatus("Please enter your Gmail address");
-      return;
-    }
-
+    setMessage("Sending OTP...");
     try {
-      const res = await fetch("http://localhost:5000/send-otp", {
+      const res = await fetch(`${API_BASE}/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email })
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
-        setStatus(data.message || "Failed to send OTP");
-        return;
-      }
-
-      setSent(true);
-      setTimer(60);
-      setStatus("OTP sent to your email");
-
+      setMessage(data.message || "OTP sent");
+      setStep(2);
     } catch (err) {
-      setStatus("Server not reachable");
+      setMessage("Failed to send OTP");
     }
   };
 
-  // 🔹 VERIFY OTP
   const verifyOtp = async () => {
+    setMessage("Verifying OTP...");
     try {
-      const res = await fetch("http://localhost:5000/verify-otp", {
+      const res = await fetch(`${API_BASE}/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify({ email, otp })
       });
 
       const data = await res.json();
 
-      if (!res.ok) {
-        setStatus(data.message || "Invalid OTP");
-        return;
+      if (res.ok) {
+        localStorage.setItem("pandacart_loggedIn", "true");
+        localStorage.setItem("pandacart_email", email);
+        setEmail(email);
+        setIsLoggedIn(true);
+      } else {
+        setMessage(data.message);
       }
-
-      localStorage.setItem("pandacart_loggedIn", "true");
-      localStorage.setItem("pandacart_email", email);
-
-      setEmail(email);
-      setIsLoggedIn(true);
-
-    } catch {
-      setStatus("Verification failed");
+    } catch (err) {
+      setMessage("OTP verification failed");
     }
   };
 
   return (
-    <>
-      <Header />
+    <div className="login-container">
+      <h1>PandaCart</h1>
 
-      <div className="page">
-        <div className="card">
-          <h2>Login with Gmail</h2>
+      {step === 1 && (
+        <>
+          <input
+            type="email"
+            placeholder="Enter Gmail"
+            value={email}
+            onChange={(e) => setEmailInput(e.target.value)}
+          />
+          <button onClick={sendOtp}>Send OTP</button>
+        </>
+      )}
 
-          {status && <p className="status">{status}</p>}
+      {step === 2 && (
+        <>
+          <input
+            type="text"
+            placeholder="Enter OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
+          <button onClick={verifyOtp}>Verify OTP</button>
+        </>
+      )}
 
-          {!sent ? (
-            <>
-              <input
-                type="email"
-                placeholder="Enter your Gmail"
-                value={email}
-                onChange={(e) => setEmailInput(e.target.value)}
-              />
-              <button onClick={sendOtp}>Send OTP</button>
-            </>
-          ) : (
-            <>
-              <input
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-              />
-
-              <button onClick={verifyOtp}>Verify OTP</button>
-
-              <div className="timer">
-                {timer > 0 ? (
-                  <span>Resend OTP in {timer}s</span>
-                ) : (
-                  <button onClick={sendOtp}>Resend OTP</button>
-                )}
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-    </>
+      <p>{message}</p>
+    </div>
   );
 }
