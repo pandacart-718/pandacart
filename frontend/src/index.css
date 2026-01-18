@@ -1,0 +1,115 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  background: #f5f7fb;
+  color: #333;
+}
+
+/* ---------- HEADER ---------- */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 40px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header img {
+  height: 42px;
+}
+
+.header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* ---------- PAGE WRAPPER ---------- */
+.page {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 16px;
+}
+
+.status {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #2563eb;
+}
+
+
+/* ---------- CARD ---------- */
+.card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  padding: 28px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.card p {
+  text-align: center;
+  margin-bottom: 12px;
+  color: #6b7280;
+}
+
+.card input,
+.card textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+}
+
+.card textarea {
+  resize: none;
+  height: 80px;
+}
+
+.card button {
+  width: 100%;
+  padding: 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.card button:hover {
+  background: #1d4ed8;
+}
+
+.timer {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ---------- PRODUCTS ---------- */
+.products {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  padding: 10px;
+}
